@@ -28,7 +28,8 @@ router.post('/create', (req, res)=>{
 
 
 router.get('/retrieve-one', (req,res)=>{
-    const {_openerId} = req.body;
+    console.log(req.query['id'])
+    let _openerId = req.query['id'];
     Opener.findOne({_openerId}).then((opener)=>{
         if(!opener){
             return res.status(404).send();
@@ -48,6 +49,25 @@ router.get('/retrieve-all', (req,res)=>{
         if(!openers){
             return res.status(404).send();
         }
+        return res.status(200).send(openers);
+    })
+    .catch(err => {
+        if(err) {
+            return res.status(401).send(err);
+        }
+        return res.status(401).send();
+    });
+});
+
+
+router.get('/retrieve-by-cat', (req,res)=>{
+    console.log(req.query['category'])
+    let category = req.query['category'];
+    Opener.find({ genere: category}).then((openers)=>{
+        if(!openers){
+            return res.status(404).send();
+        }
+        console.log(openers)
         return res.status(200).send(openers);
     })
     .catch(err => {
