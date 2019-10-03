@@ -1,11 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const Opener = require('../db/models/opener-model');
+const User  = require('../db/models/user-model');
 
 router.post('/create', (req, res)=>{
-    const {content, genere} = req.body;
+    const {alias, content, genere} = req.body;
 
     let newOpener = new Opener({
+        alias,
         content,
         genere
     });
@@ -30,7 +32,7 @@ router.post('/create', (req, res)=>{
 router.get('/retrieve-one', (req,res)=>{
     console.log(req.query['id'])
     let _openerId = req.query['id'];
-    Opener.findOne({_openerId}).then((opener)=>{
+    Opener.findOne({_id: _openerId}).then((opener)=>{
         if(!opener){
             return res.status(404).send();
         }
@@ -78,8 +80,80 @@ router.get('/retrieve-by-cat', (req,res)=>{
     });
 });
 
+function countUnique(iterable) {
+    return new Set(iterable).size;
+}
 
+router.get('/success', (req, res)=>{
+    let _openerId = req.query['id'];
 
+    Opener.findOne({_id: _openerId}).then((opener)=>{
+        if(!opener){
+            console.log('opener not found')
+            return res.status(404).send();
+        }
+        let ups = countUnique(opener.upVotes); 
+        console.log('up votes: ' + ups);
+        let downs = countUnique(opener.downVotes); 
+        console.log('down votes: ' + ups);
+        let successRate = ups/(ups+downs)
+        let success = Math.round(successRate * 100) / 100 
+        console.log('sucess rate is :   -  - ' + success)
+        let data = {
+            "upVotes": ups,
+            "downVotes": downs,
+            "successRate": success
+        };
+        return res.status(200).send(data);
+
+    })
+    .catch(err => {
+        if(err) {
+            return res.status(401).send(err);
+        }
+        return res.status(401).send();
+    });
+});
+
+router.post('/up-vote', (req, res)=>{
+    const {_userId, _openerId} = req.body;
+
+    Opener.findOne({_id: _openerId}).then((opener)=>{
+        if(!opener){
+            console.log('opener not found')
+            return res.status(404).send();
+        }
+        opener.upVotes.push(_userId);
+        opener.save()
+        return res.status(200).send(opener);
+    })
+    .catch(err => {
+        if(err) {
+            return res.status(401).send(err);
+        }
+        return res.status(401).send();
+    });
+});
+
+router.post('/down-vote', (req, res)=>{
+    const {_userId, _openerId} = req.body;
+
+    Opener.findOne({_id: _openerId}).then((opener)=>{
+        if(!opener){
+            console.log('opener not found')
+            return res.status(404).send();
+        }
+        opener.downVotes.push(_userId);
+        opener.save()
+        return res.status(200).send(opener);
+    })
+    .catch(err => {
+        if(err) {
+            return res.status(401).send(err);
+        }
+        return res.status(401).send();
+    });
+});
 
 
 

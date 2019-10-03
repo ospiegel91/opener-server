@@ -1,3 +1,4 @@
+const User = require('./user-model')
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcrypt');
@@ -17,15 +18,19 @@ const Opener = new mongoose.Schema({
         required:false,
         default:'generic',
     },
-    upVotes:{
-        type:Number,
+    alias:{
+        type:String,
+        minlength:1,
         required:false,
-        default: 0,
+        default:'annonymous',
+    },
+    upVotes:{
+        type:[String],
+        required:false,
     },
     downVotes:{
-        type:Number,
+        type:[String],
         required:false,
-        default: 0,
     },
     updated: { 
         type: Date, 

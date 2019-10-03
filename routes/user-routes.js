@@ -41,7 +41,8 @@ router.post('/login', (req,res)=>{
                 return res.status(401).send();
             };
             let token = jwt.sign({_id:user._id}, secret);
-            return res.status(201).header('x-auth', token).send();
+            res.status(201).header('x-auth', token);
+            return res.header('user-id', user._id).send();
             
         }).catch(err=>{
             return res.status(401).send({error:err});
