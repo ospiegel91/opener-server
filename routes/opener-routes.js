@@ -86,7 +86,7 @@ function countUnique(iterable) {
 
 router.get('/success', (req, res)=>{
     let _openerId = req.query['id'];
-
+    console.log(_openerId)
     Opener.findOne({_id: _openerId}).then((opener)=>{
         if(!opener){
             console.log('opener not found')
@@ -96,10 +96,15 @@ router.get('/success', (req, res)=>{
         console.log('up votes: ' + ups);
         let downs = countUnique(opener.downVotes); 
         console.log('down votes: ' + ups);
-        let successRate = ups/(ups+downs)
-        let success = Math.round(successRate * 100) / 100 
-        console.log('sucess rate is :   -  - ' + success)
+        if ((ups+downs)<1){
+            console.log('not enough votes!')
+            return res.status(204).send();
+        }
+        let successRate = ups/(ups+downs);
+        let success = Math.round(successRate * 100) / 100;
+        console.log('sucess rate is :   -  - ' + success);
         let data = {
+            "message": "success",
             "upVotes": ups,
             "downVotes": downs,
             "successRate": success
