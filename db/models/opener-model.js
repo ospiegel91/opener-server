@@ -1,10 +1,10 @@
-const User = require('./user-model')
 const mongoose = require('mongoose');
-const validator = require('validator');
-const bcrypt = require('bcrypt');
-
 
 const Opener = new mongoose.Schema({
+    isPublished: {
+        type: Boolean,
+        default: false,
+    },
     content:{
         type:String,
         required:true,

@@ -47,7 +47,7 @@ router.get('/retrieve-one', (req,res)=>{
 });
 
 router.get('/retrieve-all', (req,res)=>{
-    Opener.find().then((openers)=>{
+    Opener.find({isPublished: true}).then((openers)=>{
         if(!openers){
             return res.status(404).send();
         }
@@ -65,7 +65,7 @@ router.get('/retrieve-all', (req,res)=>{
 router.get('/retrieve-by-cat', (req,res)=>{
     console.log(req.query['category'])
     let category = req.query['category'];
-    Opener.find({ genere: category}).then((openers)=>{
+    Opener.find({ genere: category, isPublished: true}).then((openers)=>{
         if(!openers){
             return res.status(404).send();
         }
